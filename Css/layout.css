@@ -1,0 +1,34 @@
+/* Page layout */
+.layout-wrapper {
+    padding: 20px;
+}
+
+/* Cards */
+.card-main,
+.card-sidebar {
+    border-radius: 18px;
+    border: none;
+    background-color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.card-main {
+    height: calc(100vh - 110px);
+    overflow: hidden;
+}
+
+.card-sidebar {
+    height: calc(100vh - 110px);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .card-main,
+    .card-sidebar {
+        height: auto;
+    }
+
+    .layout-wrapper {
+        padding: 12px;
+    }
+}

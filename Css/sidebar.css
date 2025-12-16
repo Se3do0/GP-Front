@@ -1,0 +1,27 @@
+/* Sidebar title */
+.sidebar-header {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* Sidebar nav */
+.nav-transactions .nav-link {
+    padding: 0.75rem;
+    border-radius: 10px;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-transactions .nav-link.active {
+    background-color: #f0f5ff;
+    color: #17a2b8;
+    font-weight: bold;
+}
+
+/* New transaction button */
+.btn-new {
+    border-radius: 10px;
+    font-weight: 600;
+}

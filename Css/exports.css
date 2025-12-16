@@ -1,0 +1,48 @@
+/* Exports header */
+.exports-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* List container */
+.list-exports {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+}
+
+/* Single row */
+.export-row {
+    padding: 14px 4px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.export-row:hover {
+    background-color: #f9fafb;
+}
+
+.export-main-text {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.export-sub-text {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+/* Animation */
+.view-animated {
+    animation: fadeSlideIn 0.3s ease-out;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
