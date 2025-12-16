@@ -17,11 +17,12 @@ fetch("components/navbar.html")
     });
 
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    await GetAllMessages();
     if (listTitle && MESSAGE_TYPE_LABELS[currentType]) {
         listTitle.textContent = MESSAGE_TYPE_LABELS[currentType];
     }
-    refreshList();
+    // refreshList();  // removed, let inbox.js handle
 
     // back to list buttons
     if (btnBack) btnBack.addEventListener("click", backToListView);

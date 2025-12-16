@@ -52,10 +52,9 @@ function renderUsers(list) {
             <td>${user.department_name}</td>
             <td>
                 <button class="btn btn-sm btn-outline-primary"
-                        onclick="location.href='user-form.html?id=${user.user_id}'">
+                        onclick="editUser(${user.user_id})">
                     تعديل
                 </button>
-
                 <button class="btn btn-sm btn-outline-danger"
                         onclick="deleteUser(${user.user_id})">
                     حذف

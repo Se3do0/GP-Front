@@ -47,8 +47,11 @@ function renderList({ data, filter = "", type = null }) {
                 </div>
             `;
 
-            row.addEventListener("click", () => {
-                showMessageDetails(item);
+            row.addEventListener("click", async () => {
+                const details = await GetTransactionDetails(item.id);
+                if (details) {
+                    showMessageDetails(details);
+                }
             });
 
             exportList.appendChild(row);

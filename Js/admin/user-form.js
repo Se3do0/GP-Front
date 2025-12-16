@@ -2,41 +2,21 @@ const params = new URLSearchParams(window.location.search);
 const userId = params.get("id");
 
 const pageTitle = document.getElementById("pageTitle");
-const submitBtn = document.getElementById("submitBtn");
-const passwordHint = document.getElementById("passwordHint");
-
 const fullNameInput = document.getElementById("fullNameInput");
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
-const roleInput = document.getElementById("roleSelect");
+const roleInput = document.getElementById("roleInput");
 const departmentInput = document.getElementById("departmentInput");
 
 const token = localStorage.getItem("adminToken");
 
-/* ================= HELPER ================= */
-async function handleApiResponse(res) {
-    const data = await res.json();
-
-    if (data.status !== "success") {
-        throw new Error(data.message || "حدث خطأ غير متوقع");
-    }
-
-    return data;
-}
-
-/* ================= UPDATE MODE ================= */
+// لو Update
 if (userId) {
     pageTitle.textContent = "تعديل بيانات المستخدم";
-    submitBtn.textContent = "تحديث البيانات";
-    passwordHint.textContent = "اتركها فارغة في حالة عدم التغيير";
-
-    // Optional UX improvement
-    emailInput.disabled = true;
-
     loadUserData(userId);
 }
 
-/* ================= LOAD USER DATA ================= */
+/* ================= LOAD USER ================= */
 async function loadUserData(id) {
     try {
         const res = await fetch(`${BASE_URL}/api/Admin/getAllUsers`, {
@@ -45,85 +25,89 @@ async function loadUserData(id) {
             }
         });
 
-        const data = await handleApiResponse(res);
+        const json = await res.json();
+        const user = json.data.users.find(u => u.user_id == id);
 
-        const user = data.data.users.find(u => u.user_id == id);
-
-        if (!user) {
-            throw new Error("المستخدم غير موجود");
-        }
+        if (!user) return alert("المستخدم غير موجود");
 
         fullNameInput.value = user.full_name;
         emailInput.value = user.email;
-        roleInput.value = String(user.role_level);
+        roleInput.value = user.role_level;
         departmentInput.value = user.department_id ?? "";
 
-
-    } catch (err) {
-        alert(err.message);
+    } catch {
+        alert("فشل تحميل بيانات المستخدم");
     }
 }
 
 /* ================= SUBMIT ================= */
-submitBtn.addEventListener("click", async () => {
-
-    if (!roleInput.value) {
-        alert("من فضلك اختر الدور الوظيفي");
-        return;
-    }
-
+async function submitForm() {
     const payload = {
+        email: emailInput.value,
         roleId: Number(roleInput.value),
         departmentId: Number(departmentInput.value)
     };
 
     if (fullNameInput.value.trim()) {
-        payload.fullName = fullNameInput.value.trim();
+        payload.fullName = fullNameInput.value;
     }
 
     if (passwordInput.value.trim()) {
-        payload.password = passwordInput.value.trim();
+        payload.password = passwordInput.value;
     }
 
-    try {
-        if (userId) {
-            await updateUser(userId, payload);
-        } else {
-            payload.email = emailInput.value.trim();
-            await addUser(payload);
-        }
-
-        alert("تم حفظ البيانات بنجاح");
-        window.location.href = "admin.html";
-
-    } catch (err) {
-        alert(err.message);
+    if (userId) {
+        await updateUser(userId, payload);
+    } else {
+        await addUser(payload);
     }
-});
+}
 
 /* ================= API ================= */
-async function addUser(payload) {
-    const res = await fetch(`${BASE_URL}/api/Admin/AddUser`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
 
-    await handleApiResponse(res);
+async function addUser(payload) {
+    try {
+        const res = await fetch(`${BASE_URL}/api/Admin/AddUser`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.status !== "success") throw new Error();
+
+        alert("تم إضافة المستخدم بنجاح");
+        window.location.href = "admin.html";
+
+    } catch {
+        alert("فشل إضافة المستخدم");
+    }
 }
 
 async function updateUser(id, payload) {
-    const res = await fetch(`${BASE_URL}/api/Admin/users/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
+    try {
+        const res = await fetch(
+            `${BASE_URL}/api/Admin/users/${id}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            }
+        );
 
-    await handleApiResponse(res);
+        const data = await res.json();
+        if (data.status !== "success") throw new Error();
+
+        alert("تم تحديث بيانات المستخدم");
+        window.location.href = "admin.html";
+
+    } catch {
+        alert("فشل تحديث المستخدم");
+    }
 }

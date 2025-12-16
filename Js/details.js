@@ -1,12 +1,12 @@
 // Show details view
-function showMessageDetails(item) {
-    if (msgTitle) msgTitle.textContent = item.subtitle;
-    if (msgBody) msgBody.textContent = item.description;
-    if (msgSender) msgSender.textContent = item.sender;
-    if (msgReceiver) msgReceiver.textContent = item.receiver;
-    if (msgNumber) msgNumber.textContent = item.number;
-    if (msgDate) msgDate.textContent = item.date;
-    if (msgStatus) msgStatus.textContent = item.status;
+function showMessageDetails(details) {
+    if (msgTitle) msgTitle.textContent = details.subject;
+    if (msgBody) msgBody.textContent = details.content;
+    if (msgSender) msgSender.textContent = details.sender_name;
+    if (msgReceiver) msgReceiver.textContent = "-";  // Not in response
+    if (msgNumber) msgNumber.textContent = details.code;
+    if (msgDate) msgDate.textContent = new Date(details.date).toLocaleDateString("ar-EG");
+    if (msgStatus) msgStatus.textContent = details.current_status;
 
     // Hide list
     if (exportList) exportList.classList.add("d-none");

@@ -22,19 +22,3 @@ body {
 .login-logo {
     width: 70px;
 }
-
-.contact-button {
-    background-color:#17a2b8;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 500;
-    transition: background-color 0.3s, transform 0.2s; /* Added transform for animation */
-}
-
-.contact-button:hover {
-    transform: translateY(-2px); /* Subtle lift animation */
-}
