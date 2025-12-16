@@ -1,0 +1,49 @@
+/* Navbar container */
+.navbar-custom {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    height: 70px;
+}
+
+/* Search in navbar */
+.search-wrapper {
+    max-width: 420px;
+}
+
+.search-wrapper .form-control {
+    border-radius: 999px;
+    padding-inline-start: 2.5rem;
+    padding-inline-end: 2.5rem;
+    background-color: #f7f7f7;
+}
+
+.search-wrapper .bi-search,
+.search-wrapper .bi-x-lg {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.search-wrapper .bi-search {
+    inset-inline-start: 14px;
+}
+
+.search-wrapper .bi-x-lg {
+    inset-inline-end: 14px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+/* Avatar */
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    background: #000;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}

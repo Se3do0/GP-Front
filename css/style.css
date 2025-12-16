@@ -1,0 +1,320 @@
+/* General Styles */
+:root {
+    --primary-color: #007bff; /* A standard blue, will adjust to the image's teal */
+    --secondary-color: #6c757d;
+    --background-color: #f8f8f8; /* Very light off-white */
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --heading-color: #003366; /* Dark blue for headings */
+    --button-bg: #17a2b8; /* Teal-like color from the image */
+    --button-hover-bg: #138496;
+    --border-color: #ced4da;
+    --input-bg: #f5f5f5; /* Light gray for input background */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans Arabic', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Header */
+.main-header {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-background);
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo-text p:first-child {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: var(--heading-color);
+}
+
+.logo-text p:last-child {
+    font-size: 0.7em;
+    color: var(--secondary-color);
+    letter-spacing: 0.5px;
+}
+
+.contact-button {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.2s; /* Added transform for animation */
+}
+
+.contact-button:hover {
+    background-color: var(--button-hover-bg);
+    transform: translateY(-2px); /* Subtle lift animation */
+}
+
+/* Main Content - Login Container */
+.login-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-card {
+    background-color: var(--card-background);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    /* Animation for card entrance */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInSlideUp 0.6s ease-out forwards;
+}
+
+/* Welcome Section */
+.welcome-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.welcome-section h1 {
+    font-size: 2em;
+    font-weight: 800;
+    color: var(--heading-color);
+    margin-bottom: 10px;
+}
+
+.welcome-section p {
+    font-size: 1em;
+    color: var(--secondary-color);
+}
+
+/* Form */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    text-align: right;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: var(--heading-color);
+    margin-bottom: 8px;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: var(--input-bg);
+    border-radius: 10px;
+    padding: 0 15px;
+    border: 1px solid transparent;
+    transition: border-color 0.3s, box-shadow 0.3s; /* Added box-shadow for animation */
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--button-bg);
+    background-color: var(--card-background);
+    box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.2); /* Subtle focus animation */
+}
+
+.input-wrapper input {
+    flex-grow: 1;
+    border: none;
+    background: none;
+    padding: 15px 10px;
+    font-size: 1em;
+    outline: none;
+    text-align: right; /* Ensure text input is RTL */
+}
+
+.input-wrapper input::placeholder {
+    color: #aaaaaa;
+}
+
+.input-wrapper .fas {
+    color: var(--secondary-color);
+    font-size: 1.1em;
+}
+
+.input-wrapper {
+    position: relative; /* To position the absolute icons */
+}
+
+.input-wrapper input {
+    padding: 15px 40px 15px 10px; /* Increased right padding for the icon */
+}
+
+.input-wrapper .icon-left {
+    position: absolute;
+    left: 15px; /* Position the lock/user icon on the left */
+    pointer-events: none; /* Make sure it doesn't interfere with input */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px; /* Position the toggle icon on the right */
+    cursor: pointer;
+    z-index: 10;
+    color: var(--secondary-color);
+    transition: color 0.2s;
+}
+
+.password-toggle:hover {
+    color: var(--heading-color);
+}
+
+.error-message {
+    text-align: right;
+    color: #dc3545; /* Red color for error */
+    background-color: #f8d7da; /* Light red background */
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: none; /* Hidden by default, shown by JS */
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.input-wrapper .fas {
+    color: var(--secondary-color);
+    font-size: 1.1em;
+}
+
+.login-button {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.2s; /* Added transform for animation */
+}
+
+.login-button:hover {
+    background-color: var(--button-hover-bg);
+    transform: translateY(-2px); /* Subtle lift animation */
+}
+
+/* Footer */
+.main-footer {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--secondary-color);
+}
+
+/* Animations */
+@keyframes fadeInSlideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsiveness (Media Queries) */
+@media (max-width: 768px) {
+    .main-header {
+        padding: 15px 20px;
+    }
+
+    .logo-text p:first-child {
+        font-size: 1em;
+    }
+
+    .logo-text p:last-child {
+        font-size: 0.65em;
+    }
+
+    .contact-button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    .login-container {
+        padding: 10px;
+    }
+
+    .login-card {
+        max-width: 90%; /* Take up more width on small screens */
+        padding: 30px 20px;
+    }
+
+    .welcome-section h1 {
+        font-size: 1.8em;
+    }
+
+    .login-button {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-end;
+    }
+
+    .logo {
+        align-self: flex-start;
+    }
+
+    .login-card {
+        max-width: 100%;
+        margin: 10px;
+    }
+}
