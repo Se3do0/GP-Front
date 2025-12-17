@@ -11,15 +11,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="Css/base.css" />
-    <link rel="stylesheet" href="Css/navbar.css" />
-    <link rel="stylesheet" href="Css/layout.css" />
-    <link rel="stylesheet" href="Css/sidebar.css" />
-    <link rel="stylesheet" href="Css/exports.css" />
+    <link rel="stylesheet" href="./Css/base.css" />
+    <link rel="stylesheet" href="./Css/navbar.css" />
+    <link rel="stylesheet" href="./Css/layout.css" />
+    <link rel="stylesheet" href="./Css/sidebar.css" />
+    <link rel="stylesheet" href="./Css/exports.css" />
 
     <script>
     if (!localStorage.getItem("token")) {
-        window.location.href = "login.html";
+        window.location.href = "./login.html";
     }
     </script>
 
@@ -57,7 +57,7 @@
                         <a class="nav-link" href="#" data-type="deleted"><span>المحذوفة</span><i class="bi bi-trash3"></i></a>
                     </nav>
 
-                    <button class="btn btn-primary w-100 btn-new">معاملة جديدة</button>
+                    <a class="btn btn-primary w-100 btn-new" href="./add-transaction.html">معاملة جديدة</a>
                 </div>
             </div>
 
@@ -139,12 +139,25 @@
         </div>
     </div>
 
-    <script src="Js/data.js"></script>
-    <script src="Js/dom.js"></script>
-    <script src="Js/ui.js"></script>
-    <script src="Js/details.js"></script>
-    <script src="Js/main.js"></script>
-    <script src="Js/inbox.js"></script>
+    <script>
+    // load shared navbar component
+    (async function(){
+        try{
+            const res = await fetch('./components/navbar.html');
+            if(res.ok){
+                const html = await res.text();
+                document.getElementById('navbar').innerHTML = html;
+            }
+        }catch(e){console.warn('Navbar load failed', e)}
+    })();
+    </script>
+
+    <script src="./Js/data.js"></script>
+    <script src="./Js/dom.js"></script>
+    <script src="./Js/ui.js"></script>
+    <script src="./Js/details.js"></script>
+    <script src="./Js/main.js"></script>
+    <script src="./Js/inbox.js"></script>
 
 
 </body>
