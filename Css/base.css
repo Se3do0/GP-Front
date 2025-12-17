@@ -1,53 +1,45 @@
 body {
-  background-color: #f6f6f6;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+    background-color: #f6f6f6;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .btn-primary {
-  background-color: #17a2b8 !important;
-  border-color: #17a2b8 !important;
+    background-color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
-  background-color: #138496 !important; /* darker shade */
-  border-color: #138496 !important;
+    background-color: #138496 !important; /* darker shade */
+    border-color: #138496 !important;
 }
 
 .badge.bg-primary {
-  background-color: #17a2b8 !important;
+    background-color: #17a2b8 !important;
 }
 
 .text-primary,
 .nav-transactions .nav-link.active {
-  color: #17a2b8 !important;
+    color: #17a2b8 !important;
 }
 
 .nav-transactions .nav-link.active {
-  background-color: rgba(23, 162, 184, 0.15) !important;
+    background-color: rgba(23, 162, 184, 0.15) !important;
 }
 
 .btn-outline-primary {
-  color: #17a2b8 !important;
-  border-color: #17a2b8 !important;
+    color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
 }
 
 .btn-outline-primary:hover {
-  background-color: #17a2b8 !important;
-  color: #fff !important;
+    background-color: #17a2b8 !important;
+    color: #fff !important;
 }
 
 #mainSearchWrapper {
-  max-width: 400px;
+    max-width: 400px;
 }
 
-/* FORM */
-.form-control:focus {
-  border-color: #17a3b83f;
-  box-shadow: 0 0 0 0.25rem #dcf1f4b9;
-}
 
-textarea {
-  resize: none;
-}
+
