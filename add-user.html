@@ -7,7 +7,7 @@
     <!-- Guard -->
     <script>
         if (!localStorage.getItem("adminToken")) {
-            window.location.href = "login.html";
+            window.location.href = "admin-login.html";
         }
     </script>
 
@@ -92,10 +92,10 @@
             <input id="passwordInput" type="password" class="form-control">
         </div>
 
-        <div class="mb-3">
+        <!-- <div class="mb-3">
             <label class="form-label">رقم المستوى</label>
             <input id="roleInput" type="number" class="form-control">
-        </div>
+        </div> -->
 
         <div class="mb-4">
             <label class="form-label">رقم الإدارة</label>
@@ -115,7 +115,7 @@
 </div>
 
 <!-- ================= SCRIPTS ================= -->
-<script src="../Js/admin/data.js"></script>
+<script src="/Js/admin/data.js"></script>
 
 <script>
 async function addUser() {

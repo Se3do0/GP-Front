@@ -9,11 +9,47 @@ const roleInput = document.getElementById("roleInput");
 const departmentInput = document.getElementById("departmentInput");
 
 const token = localStorage.getItem("adminToken");
+let departments = [];
 
 // لو Update
 if (userId) {
     pageTitle.textContent = "تعديل بيانات المستخدم";
     loadUserData(userId);
+} else {
+    // Hide role input for add
+    document.getElementById("roleInput").parentElement.style.display = 'none';
+}
+
+async function fetchDepartments() {
+    try {
+        const res = await fetch(`${BASE_URL}/api/org/departments`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const json = await res.json();
+
+        if (json.status !== "success") {
+            throw new Error("API error");
+        }
+
+        departments = json.data.departments;
+        populateDepartmentSelect();
+
+    } catch (err) {
+        console.error("Failed to load departments:", err);
+    }
+}
+
+function populateDepartmentSelect() {
+    departmentInput.innerHTML = '<option value="">اختر الإدارة</option>';
+    departments.forEach(dept => {
+        const option = document.createElement("option");
+        option.value = dept.department_id;
+        option.textContent = `${dept.department_name}${dept.college_name ? ` (${dept.college_name})` : ''}`;
+        departmentInput.appendChild(option);
+    });
 }
 
 /* ================= LOAD USER ================= */
@@ -44,7 +80,6 @@ async function loadUserData(id) {
 async function submitForm() {
     const payload = {
         email: emailInput.value,
-        roleId: Number(roleInput.value),
         departmentId: Number(departmentInput.value)
     };
 
@@ -57,6 +92,7 @@ async function submitForm() {
     }
 
     if (userId) {
+        payload.roleId = Number(roleInput.value);
         await updateUser(userId, payload);
     } else {
         await addUser(payload);
@@ -111,3 +147,6 @@ async function updateUser(id, payload) {
         alert("فشل تحديث المستخدم");
     }
 }
+
+// Load departments on page load
+document.addEventListener("DOMContentLoaded", fetchDepartments);

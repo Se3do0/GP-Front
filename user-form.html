@@ -64,6 +64,12 @@
 
         <ul class="navbar-nav d-flex flex-row gap-3 align-items-center mb-0">
             <li class="nav-item">
+                <a class="nav-link" href="admin.html">إدارة المستخدمين</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="admin-departments.html">إدارة الأقسام</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-danger" href="#" onclick="logout()">
                     تسجيل الخروج
                 </a>
@@ -103,7 +109,9 @@
 
     <div class="mb-4">
         <label class="form-label">رقم الإدارة</label>
-        <input id="departmentInput" type="number" class="form-control">
+        <select id="departmentInput" class="form-control">
+            <option value="">اختر الإدارة</option>
+        </select>
     </div>
 
     <div class="d-flex gap-2">
@@ -113,8 +121,8 @@
 
 </div>
 
-<script src="../Js/admin/data.js"></script>
-<script src="../Js/admin/user-form.js"></script>
+<script src="/Js/admin/data.js"></script>
+<script src="/Js/admin/user-form.js"></script>
 <script>
 function logout() {
     const ok = confirm("هل أنت متأكد أنك تريد تسجيل الخروج؟");

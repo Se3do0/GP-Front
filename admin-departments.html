@@ -17,6 +17,17 @@
     />
 
     <link rel="stylesheet" href="../Css/admin.css">
+
+    <style>
+        .btn-primary {
+            background-color: #17a2b8 !important;
+            border-color: #17a2b8 !important;
+        }
+        .btn-primary:hover {
+            background-color: #138f99 !important;
+            border-color: #138f99 !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -38,10 +49,10 @@
 
         <ul class="navbar-nav d-flex flex-row gap-3 align-items-center mb-0">
             <li class="nav-item">
-                <a class="nav-link active" href="admin.html">إدارة المستخدمين</a>
+                <a class="nav-link" href="admin.html">إدارة المستخدمين</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="admin-departments.html">إدارة الأقسام</a>
+                <a class="nav-link active" href="admin-departments.html">إدارة الأقسام</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-danger" href="#" onclick="logout()">
@@ -58,35 +69,48 @@
 <!-- CONTENT -->
 <div class="container mt-4">
 
-    <h4 class="fw-bold mb-3">إدارة المستخدمين</h4>
+    <h4 class="fw-bold mb-3">إدارة الأقسام</h4>
 
-    
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <a href="user-form.html" class="btn btn-primary">
-        + إضافة مستخدم
-    </a>
-</div>
+    <!-- Add Department Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">إضافة قسم جديد</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" id="departmentNameInput" class="form-control" placeholder="اسم القسم">
+                </div>
+                <div class="col-md-3">
+                    <select id="collegeIdInput" class="form-control">
+                        <option value="">اختر الكلية</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" id="roleIdInput" class="form-control" placeholder="المستوي">
+                </div>
+                <div class="col-md-12">
+                    <button class="btn btn-primary w-100" onclick="addDepartment()">إضافة</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th>الاسم</th>
-                <th>البريد الإلكتروني</th>
-                <th>المستوى</th>
-                <th>الإدارة</th>
+                <th>رقم القسم</th>
+                <th>اسم القسم</th>
+                <th>الكلية</th>
                 <th width="120">الإجراءات</th>
             </tr>
         </thead>
-        <tbody id="usersTableBody"></tbody>
+        <tbody id="departmentsTableBody"></tbody>
     </table>
 
 </div>
 
 <!-- SCRIPTS -->
 <script src="../Js/admin/data.js"></script>
-<script src="../Js/admin/ui.js"></script>
-<script src="../Js/admin/users.js"></script>
-<script src="../Js/admin/main.js"></script>
+<script src="../Js/admin/departments.js"></script>
 
 <script>
 function logout() {
