@@ -1,0 +1,137 @@
+:root {
+  --main-color: #17a2b8;
+  --main-dark: #117a8b;
+  --text-dark: #2c3e50;
+  --card-shadow: 0 4px 20px rgba(23, 162, 184, 0.15);
+}
+
+.bg-gradient-main {
+  background: linear-gradient(
+    135deg,
+    var(--main-color) 0%,
+    var(--main-dark) 100%
+  ) !important;
+}
+
+.stats-card {
+  border: none !important;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  color: #fff;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.stats-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+}
+
+.stats-card:hover::before {
+  opacity: 1;
+}
+
+.card-text {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: #fff !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.section-header {
+  color: var(--text-dark) !important;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1.1rem !important;
+  position: relative;
+  display: inline-block;
+  padding-right: 14px;
+  margin-bottom: 1.5rem;
+}
+
+.section-header::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  background-color: var(--main-color);
+  border-radius: 50px;
+  opacity: 0.8;
+}
+
+.service-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  color: var(--text-dark) !important;
+  text-decoration: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.service-icon-box {
+  width: 65px;
+  height: 65px;
+  background-color: #f8f9fa;
+  color: var(--main-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+}
+
+.service-card:hover .service-icon-box {
+  background-color: var(--main-color) !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
+}
+
+/* 5. الموبايل */
+@media (max-width: 576px) {
+  .links a {
+    width: 48% !important;
+    font-size: 13px !important;
+  }
+  .card-text {
+    font-size: 1.8rem !important;
+  }
+}
