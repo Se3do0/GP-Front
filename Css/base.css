@@ -1,5 +1,5 @@
 body {
-  background-color: #f6f6f6;
+  background-color: #f6f6f6 !important;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -44,10 +44,10 @@ body {
 
 /* FORM */
 .form-control:focus {
-  border-color: #17a3b83f;
-  box-shadow: 0 0 0 0.25rem #dcf1f4b9;
+  border-color: #17a3b83f !important;
+  box-shadow: 0 0 0 0.25rem #dcf1f4b9 !important;
 }
 
 textarea {
-  resize: none;
+  resize: none !important;
 }
