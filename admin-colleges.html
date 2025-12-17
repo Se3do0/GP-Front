@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة الإدارة - جامعة الغردقة</title>
+    <title>إدارة الكليات - جامعة الغردقة</title>
 
     <!-- Guard -->
     <script>
@@ -52,10 +52,10 @@
                 <a class="nav-link" href="admin.html">إدارة المستخدمين</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="admin-departments.html">إدارة الأقسام</a>
+                <a class="nav-link" href="admin-departments.html">إدارة الأقسام</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="admin-colleges.html">إدارة الكليات</a>
+                <a class="nav-link active" href="admin-colleges.html">إدارة الكليات</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-danger" href="#" onclick="logout()">
@@ -67,31 +67,21 @@
     </div>
 </nav>
 
-
-
 <!-- CONTENT -->
 <div class="container mt-4">
 
-    <h4 class="fw-bold mb-3">إدارة الأقسام</h4>
+    <h4 class="fw-bold mb-3">إدارة الكليات</h4>
 
-    <!-- Add Department Form -->
+    <!-- Add College Form -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">إضافة قسم جديد</h5>
+            <h5 class="card-title">إضافة كلية جديدة</h5>
             <div class="row g-3">
-                <div class="col-md-6">
-                    <input type="text" id="departmentNameInput" class="form-control" placeholder="اسم القسم">
+                <div class="col-md-8">
+                    <input type="text" id="collegeNameInput" class="form-control" placeholder="اسم الكلية">
                 </div>
-                <div class="col-md-3">
-                    <select id="collegeIdInput" class="form-control">
-                        <option value="">اختر الكلية</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="number" id="roleIdInput" class="form-control" placeholder="المستوي">
-                </div>
-                <div class="col-md-12">
-                    <button class="btn btn-primary w-100" onclick="addDepartment()">إضافة</button>
+                <div class="col-md-4">
+                    <button class="btn btn-primary w-100" onclick="addCollege()">إضافة</button>
                 </div>
             </div>
         </div>
@@ -100,20 +90,19 @@
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th>رقم القسم</th>
-                <th>اسم القسم</th>
-                <th>الكلية</th>
+                <th>رقم الكلية</th>
+                <th>اسم الكلية</th>
                 <th width="120">الإجراءات</th>
             </tr>
         </thead>
-        <tbody id="departmentsTableBody"></tbody>
+        <tbody id="collegesTableBody"></tbody>
     </table>
 
 </div>
 
 <!-- SCRIPTS -->
 <script src="../Js/admin/data.js"></script>
-<script src="../Js/admin/departments.js"></script>
+<script src="../Js/admin/colleges.js"></script>
 
 <script>
 function logout() {
