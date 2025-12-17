@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    console.log("Update Page Loaded..."); // تأكيد إن الملف شغال
+    console.log("Update Page Loaded...");
 
     const form = document.getElementById('personal-data-form');
     const submitButton = document.querySelector('.submit-button');
