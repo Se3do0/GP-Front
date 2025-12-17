@@ -6,7 +6,8 @@ const addFileBtn = document.getElementById("addFileBtn"),
   deleteToast = document.querySelector(".delete-toast"),
   parentCheckboxes = document.querySelectorAll(".parent-checkbox"),
   base_url = "https://ghared-project-1lb7.onrender.com",
-  filesList = [];
+  filesList = [],
+  USER_TOKEN = JSON.parse(localStorage.getItem("user")).token;
 
 // Files Tab
 showEmptyFile();
@@ -105,35 +106,6 @@ parentCheckboxes.forEach((parent) => {
 
 // ------------------------------ Add Transaction Api Functions
 
-// User Login
-let user_login_data = {
-  email: "hanatest@gmail.com",
-  password: "hana123test",
-};
-
-let user_login_options = {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(user_login_data),
-};
-
-async function userLogin() {
-  try {
-    let login_raw_response = await fetch(
-      `${base_url}/api/users/login`,
-      user_login_options
-    );
-    let login_json_response = await login_raw_response.json();
-    let token = login_json_response.data.token;
-    localStorage.setItem("new_login_token", token);
-    console.log(login_json_response);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 // Get Receivers & Types
 const loadingSpinner = `
     <div class="d-flex align-items-center text-primary me-3">
@@ -153,11 +125,10 @@ async function getReceiversAndTypes() {
   secondaryTypesContainer.innerHTML = loadingSpinner;
   mainTypesContainer.innerHTML = loadingSpinner;
   receiversContainer.innerHTML = loadingSpinner;
-  let user_token = localStorage.getItem("new_login_token");
   let receivers_options = {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${user_token}`,
+      Authorization: `Bearer ${USER_TOKEN}`,
     },
   };
 
@@ -268,8 +239,7 @@ let globalParentId = "";
 
 async function addTransaction(draftValue, alertValue) {
   try {
-    const token = localStorage.getItem("new_login_token");
-    if (!token) {
+    if (!USER_TOKEN) {
       alert("يرجى تسجيل الدخول أولاً");
       return;
     }
@@ -316,7 +286,7 @@ async function addTransaction(draftValue, alertValue) {
     const response = await fetch(`${base_url}/api/transactions/create`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${USER_TOKEN}`,
       },
       body: formData,
     });
@@ -341,11 +311,10 @@ async function addTransaction(draftValue, alertValue) {
 // Get History
 let history = null;
 async function getHistory() {
-  let user_token = localStorage.getItem("new_login_token");
   let history_options = {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${user_token}`,
+      Authorization: `Bearer ${USER_TOKEN}`,
     },
   };
   try {
@@ -439,14 +408,13 @@ function hideHistory() {
   console.log("UNCHECK");
 }
 
-// Run Full Cycle
-async function runFullCycle() {
+// Run Cycle
+async function runCycle() {
   try {
-    await userLogin();
     await getReceiversAndTypes();
   } catch (error) {
     console.error(error);
   }
 }
 
-runFullCycle();
+runCycle();

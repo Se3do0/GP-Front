@@ -1,6 +1,7 @@
 body {
-    background-color: #f6f6f6;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #f6f6f6 !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
 .btn-primary {
@@ -41,5 +42,12 @@ body {
     max-width: 400px;
 }
 
+/* FORM */
+.form-control:focus {
+  border-color: #17a3b83f !important;
+  box-shadow: 0 0 0 0.25rem #dcf1f4b9 !important;
+}
 
-
+textarea {
+  resize: none !important;
+}
