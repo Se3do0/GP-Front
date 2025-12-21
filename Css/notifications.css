@@ -1,0 +1,118 @@
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.card-main {
+  min-height: calc(100vh - 110px);
+  height: auto;
+  overflow: visible;
+}
+
+/* Notifications */
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px;
+  background-color: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 8px; /* تدوير خفيف */
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.notification-item:hover {
+  background-color: #fafafa;
+  transform: translateY(-2px); /* حركة ناعمة لفوق */
+}
+
+/* 2. ستايل "غير مقروء" (Unread State) */
+.notification-item.unread {
+  background-color: #f0fbfc; /* خلفية تيركواز فاتحة جداً */
+}
+
+/* خط جانبي مميز لغير المقروء */
+.notification-item.unread::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #17a2b8; /* لون البراند */
+}
+
+/* 3. الأفاتار (الدايرة الملونة) */
+.sender-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 6px rgba(23, 162, 184, 0.2);
+}
+
+/* 4. المحتوى النصي */
+.notif-content {
+  flex-grow: 1; /* ياخد باقي المساحة */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notif-subject {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.notif-sender {
+  font-size: 0.85rem;
+  color: #17a2b8; /* لون التيركواز */
+  font-weight: 600;
+}
+
+.notif-snippet {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+  /* لو النص طويل يقصه بنقط */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+
+/* 5. التاريخ */
+.notif-date {
+  font-size: 0.75rem;
+  color: #adb5bd;
+  white-space: nowrap;
+  align-self: flex-start; /* يطلع فوق شوية */
+  padding-top: 5px;
+}
+
+/* في ملف notifications.css */
+
+.icon-mark-read {
+  font-size: 1.3rem; /* حجم مناسب للأيقونة */
+  color: #adb5bd; /* لون رمادي هادي في العادي */
+  cursor: pointer; /* يخلي الماوس شكل يد */
+  transition: all 0.2s ease;
+}
+
+/* لما الماوس يقف عليها */
+.icon-mark-read:hover {
+  color: #20c997; /* تتحول للون التيركواز */
+  transform: scale(1.1); /* تكبر سنة بسيطة */
+}

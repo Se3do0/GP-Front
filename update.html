@@ -40,35 +40,7 @@
       <!-- Notifications will be inserted here by JavaScript -->
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-custom py-4 px-4">
-      <div class="d-flex align-items-center w-100 justify-content-between">
-        <div class="d-flex align-items-center">
-          <div class="d-flex align-items-center gap-4">
-            <div class="avatar-circle"><span>F</span></div>
-
-            <button class="btn btn-link text-dark p-0 position-relative">
-              <i class="bi bi-bell fs-5"></i>
-              <span
-                class="badge bg-danger position-absolute top-0 start-0 translate-middle"
-                >3</span
-              >
-            </button>
-
-            <ul class="navbar-nav d-none d-lg-flex gap-3 align-items-center">
-              <li class="nav-item">
-                <a class="nav-link" href="#">الرئيسية</a>
-              </li>
-              <li class="nav-item"><a class="nav-link" href="#">خدماتنا</a></li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">اتصل بنا</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <a class="navbar-brand fw-bold" href="#">غرد</a>
-      </div>
-    </nav>
+    <div id="navbar"></div>
 
     <!-- Main Content -->
     <main class="profile-container">
@@ -185,7 +157,9 @@
       </div>
     </main>
 
+    <script src="./Js/main.js"></script>
     <script src="./Js/script.js"></script>
     <script src="./Js/update.js"></script>
+    <script src="./Js/notifications-badge.js"></script>
   </body>
 </html>
