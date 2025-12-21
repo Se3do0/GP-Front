@@ -98,18 +98,31 @@ async function GetSent() {
             return [];
         }
 
-        return response.data.map((tx) => ({
-            id: tx.transaction_id,
-            title: tx.sender_name,
-            subtitle: tx.subject,
-            description: tx.subject,
-            sender: tx.sender_name,
-            receiver: "-",
-            number: tx.code,
-            date: new Date(tx.date).toLocaleDateString("ar-EG"),
-            type: "sent",
-            status: MESSAGE_TYPE_LABELS["sent"]
+        // For sent items we need to query details endpoint to get the receiver (`to_department`).
+        const data = response.data;
+        const items = await Promise.all(data.map(async (tx) => {
+            const full = await GetTransactionFull(tx.transaction_id);
+            let toDept = "-";
+            if (full && Array.isArray(full.history) && full.history.length > 0) {
+                const first = full.history[0];
+                toDept = first && first.to_department ? first.to_department : "-";
+            }
+
+            return {
+                id: tx.transaction_id,
+                title: toDept,
+                subtitle: tx.subject,
+                description: tx.subject,
+                sender: tx.sender_name,
+                receiver: toDept,
+                number: tx.code,
+                date: new Date(tx.date).toLocaleDateString("ar-EG"),
+                type: "sent",
+                status: MESSAGE_TYPE_LABELS["sent"]
+            };
         }));
+
+        return items;
 
     } catch (error) {
         console.error("Failed to load sent:", error);
@@ -261,6 +274,45 @@ async function GetTransactionDetails(id) {
 
     } catch (error) {
         console.error("Failed to load transaction details:", error);
+        return null;
+    }
+}
+
+// Returns full data object (details, attachments, history)
+async function GetTransactionFull(id) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "./login.html";
+        return null;
+    }
+
+    try {
+        const res = await fetch(API_BASE_URL + `/api/transactions/details/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (res.status === 401) {
+            localStorage.removeItem("token");
+            window.location.href = "./login.html";
+            return null;
+        }
+
+        const response = await res.json();
+
+        if (!response || !response.data) {
+            console.error("Invalid API response");
+            return null;
+        }
+
+        return response.data;
+
+    } catch (error) {
+        console.error("Failed to load transaction full data:", error);
         return null;
     }
 }

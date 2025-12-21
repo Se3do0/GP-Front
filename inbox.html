@@ -162,7 +162,7 @@
                   <button class="btn btn-outline-dark" id="btnBack">
                     <i class="bi bi-arrow-right-short"></i> رجوع
                   </button>
-                  <button class="btn btn-outline-primary">
+                  <button id="btnReply" type="button" class="btn btn-outline-primary">
                     <i class="bi bi-reply"></i> رد على المعاملة
                   </button>
                 </div>
@@ -195,5 +195,20 @@
     <script src="./Js/main.js"></script>
     <script src="./Js/inbox.js"></script>
     <script src="./Js/notifications-badge.js"></script>
+    <script>
+      // Redirect reply button to add-transaction page
+      (function () {
+        try {
+          const btn = document.getElementById('btnReply');
+          if (btn) {
+            btn.addEventListener('click', () => {
+              window.location.href = './add-transaction.html';
+            });
+          }
+        } catch (e) {
+          console.warn('Reply redirect setup failed', e);
+        }
+      })();
+    </script>
   </body>
 </html>
