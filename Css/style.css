@@ -154,9 +154,9 @@ body {
 }
 
 .input-wrapper:focus-within {
-  border-color: var(--button-bg);
   background-color: var(--card-background);
-  box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.2); /* Subtle focus animation */
+  border-color: #17a3b83f !important;
+  box-shadow: 0 0 0 0.25rem #dcf1f4b9 !important;
 }
 
 .input-wrapper input {
