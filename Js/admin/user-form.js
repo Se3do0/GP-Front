@@ -6,150 +6,126 @@ const fullNameInput = document.getElementById("fullNameInput");
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const roleInput = document.getElementById("roleInput");
+const roleField = document.getElementById("roleField");
 const departmentInput = document.getElementById("departmentInput");
 
-const token = localStorage.getItem("adminToken");
 let departments = [];
 
-// لو Update
 if (userId) {
     pageTitle.textContent = "تعديل بيانات المستخدم";
-    loadUserData(userId);
 } else {
-    // Hide role input for add
-    document.getElementById("roleInput").parentElement.style.display = 'none';
+    roleField.style.display = "none";
 }
 
 async function fetchDepartments() {
     try {
-        const res = await fetch(`${BASE_URL}/api/org/departments`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        const json = await res.json();
-
-        if (json.status !== "success") {
-            throw new Error("API error");
-        }
-
-        departments = json.data.departments;
+        const response = await apiRequest(ADMIN_ENDPOINTS.getDepartments);
+        departments = response?.data?.departments || [];
         populateDepartmentSelect();
 
-    } catch (err) {
-        console.error("Failed to load departments:", err);
+        if (userId) {
+            loadUserData(userId);
+        }
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل الإدارات");
+        console.error(error);
     }
 }
 
 function populateDepartmentSelect() {
     departmentInput.innerHTML = '<option value="">اختر الإدارة</option>';
-    departments.forEach(dept => {
+
+    departments.forEach((department) => {
         const option = document.createElement("option");
-        option.value = dept.department_id;
-        option.textContent = `${dept.department_name}${dept.college_name ? ` (${dept.college_name})` : ''}`;
+        option.value = department.department_id;
+        option.textContent = `${department.department_name}${department.college_name ? ` (${department.college_name})` : ""}`;
         departmentInput.appendChild(option);
     });
 }
 
-/* ================= LOAD USER ================= */
 async function loadUserData(id) {
     try {
-        const res = await fetch(`${BASE_URL}/api/Admin/getAllUsers`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        const json = await res.json();
-        const user = json.data.users.find(u => u.user_id == id);
+        const response = await apiRequest(ADMIN_ENDPOINTS.getUsers);
+        const user = (response?.data?.users || []).find((item) => String(item.user_id) === String(id));
 
         if (!user) {
-            Swal.fire({ text: 'المستخدم غير موجود', icon: 'error', confirmButtonColor: '#219ebc' });
+            showError("المستخدم غير موجود");
             return;
         }
 
-        fullNameInput.value = user.full_name;
-        emailInput.value = user.email;
-        roleInput.value = user.role_level;
+        fullNameInput.value = user.full_name || "";
+        emailInput.value = user.email || "";
+        roleInput.value = user.role_level ?? "";
         departmentInput.value = user.department_id ?? "";
-
-    } catch {
-        Swal.fire({ text: 'فشل تحميل بيانات المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل بيانات المستخدم");
+        console.error(error);
     }
 }
 
-/* ================= SUBMIT ================= */
 async function submitForm() {
-    const payload = {
-        email: emailInput.value,
-        departmentId: Number(departmentInput.value)
-    };
+    const fullName = fullNameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const departmentId = Number(departmentInput.value);
 
-    if (fullNameInput.value.trim()) {
-        payload.fullName = fullNameInput.value;
+    if (!fullName || !email || !departmentId) {
+        showWarning("يرجى استكمال الحقول الأساسية");
+        return;
     }
 
-    if (passwordInput.value.trim()) {
-        payload.password = passwordInput.value;
+    const payload = {
+        fullName,
+        email,
+        departmentId
+    };
+
+    if (password) {
+        payload.password = password;
     }
 
     if (userId) {
-        payload.roleId = Number(roleInput.value);
-        await updateUser(userId, payload);
+        const roleId = Number(roleInput.value);
+        if (!roleId && roleId !== 0) {
+            showWarning("يرجى إدخال رقم المستوى");
+            return;
+        }
+
+        payload.roleId = roleId;
+        updateUser(userId, payload);
     } else {
-        await addUser(payload);
+        addUser(payload);
     }
 }
 
-/* ================= API ================= */
-
 async function addUser(payload) {
     try {
-        const res = await fetch(`${BASE_URL}/api/Admin/AddUser`, {
+        await apiRequest(ADMIN_ENDPOINTS.addUser, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
+            body: payload
         });
 
-        const data = await res.json();
-        if (data.status !== "success") throw new Error();
-
-        await Swal.fire({ text: 'تم إضافة المستخدم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم إضافة المستخدم بنجاح");
         window.location.href = "admin.html";
-
-    } catch {
-        Swal.fire({ text: 'فشل إضافة المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
+    } catch (error) {
+        handleApiFailure(error, "فشل إضافة المستخدم");
+        console.error(error);
     }
 }
 
 async function updateUser(id, payload) {
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/Admin/users/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.updateUser(id), {
+            method: "PUT",
+            body: payload
+        });
 
-        const data = await res.json();
-        if (data.status !== "success") throw new Error();
-
-        await Swal.fire({ text: 'تم تحديث بيانات المستخدم', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم تحديث بيانات المستخدم");
         window.location.href = "admin.html";
-
-    } catch {
-        Swal.fire({ text: 'فشل تحديث المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
+    } catch (error) {
+        handleApiFailure(error, "فشل تحديث المستخدم");
+        console.error(error);
     }
 }
 
-// Load departments on page load
 document.addEventListener("DOMContentLoaded", fetchDepartments);

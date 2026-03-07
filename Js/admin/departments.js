@@ -3,30 +3,20 @@ let colleges = [];
 
 async function fetchColleges() {
     try {
-        const res = await fetch(`${BASE_URL}/api/org/colleges`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            }
-        });
-
-        const json = await res.json();
-
-        if (json.status !== "success") {
-            throw new Error("API error");
-        }
-
-        colleges = json.data.colleges;
+        const response = await apiRequest(ADMIN_ENDPOINTS.getColleges);
+        colleges = response?.data?.colleges || [];
         populateCollegeSelect();
-
-    } catch (err) {
-        console.error("Failed to load colleges:", err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل الكليات");
+        console.error(error);
     }
 }
 
 function populateCollegeSelect() {
     const select = document.getElementById("collegeIdInput");
     select.innerHTML = '<option value="">اختر الكلية</option>';
-    colleges.forEach(college => {
+
+    colleges.forEach((college) => {
         const option = document.createElement("option");
         option.value = college.college_id;
         option.textContent = college.college_name;
@@ -36,46 +26,15 @@ function populateCollegeSelect() {
 
 async function fetchDepartments() {
     const departmentsTableBody = document.getElementById("departmentsTableBody");
-    departmentsTableBody.innerHTML = `
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-    `;
+    departmentsTableBody.innerHTML = renderSkeletonRows(4, 4);
 
     try {
-        const res = await fetch(`${BASE_URL}/api/org/departments`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            }
-        });
-
-        const json = await res.json();
-
-        if (json.status !== "success") {
-            throw new Error("API error");
-        }
-
-        departments = json.data.departments;
+        const response = await apiRequest(ADMIN_ENDPOINTS.getDepartments);
+        departments = response?.data?.departments || [];
         renderDepartments(departments);
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل تحميل الأقسام', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل الأقسام");
+        console.error(error);
     }
 }
 
@@ -83,34 +42,26 @@ function renderDepartments(list) {
     const departmentsTableBody = document.getElementById("departmentsTableBody");
     departmentsTableBody.innerHTML = "";
 
-    if (!list || !list.length) {
-        departmentsTableBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center py-5">
-                    <i class="bi bi-inbox text-muted display-4"></i>
-                    <p class="text-muted fw-bold mt-2">لا توجد بيانات مسجلة حالياً</p>
-                </td>
-            </tr>
-        `;
+    if (!Array.isArray(list) || list.length === 0) {
+        departmentsTableBody.innerHTML = renderEmptyState(4);
         return;
     }
 
-    list.forEach(dept => {
+    list.forEach((department) => {
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
-            <td>${dept.department_id}</td>
-            <td>${dept.department_name}</td>
-            <td>${dept.college_name || '-'}</td>
+            <td>${escapeHtml(department.department_id)}</td>
+            <td>${escapeHtml(department.department_name)}</td>
+            <td>${escapeHtml(department.college_name || "-")}</td>
             <td>
-                <button class="btn btn-sm btn-outline-primary"
-                        onclick="editDepartment(${dept.department_id})">
-                    تعديل
-                </button>
-                <button class="btn btn-sm btn-outline-danger"
-                        onclick="deleteDepartment(${dept.department_id})">
-                    حذف
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editDepartment(${department.department_id})">
+                        <i class="bi bi-pencil-square ms-1"></i>تعديل
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteDepartment(${department.department_id})">
+                        <i class="bi bi-trash ms-1"></i>حذف
+                    </button>
+                </div>
             </td>
         `;
 
@@ -119,120 +70,88 @@ function renderDepartments(list) {
 }
 
 async function addDepartment() {
-    const name = document.getElementById("departmentNameInput").value.trim();
+    const departmentName = document.getElementById("departmentNameInput").value.trim();
     const collegeId = Number(document.getElementById("collegeIdInput").value);
     const roleId = Number(document.getElementById("roleIdInput").value);
 
-    if (!name || !collegeId || !roleId) {
-        Swal.fire({ text: 'يرجى ملء جميع الحقول', icon: 'warning', confirmButtonColor: '#219ebc' });
+    if (!departmentName || !collegeId || !roleId) {
+        showWarning("يرجى ملء جميع الحقول");
         return;
     }
 
     try {
-        const res = await fetch(`${BASE_URL}/api/org/departments`, {
+        await apiRequest(ADMIN_ENDPOINTS.addDepartment, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            },
-            body: JSON.stringify({
-                departmentName: name,
-                collegeId: collegeId,
-                roleId: roleId
-            })
+            body: {
+                departmentName,
+                collegeId,
+                roleId
+            }
         });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Add failed");
-        }
-
-        Swal.fire({ text: 'تم إضافة القسم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم إضافة القسم بنجاح");
         document.getElementById("departmentNameInput").value = "";
         document.getElementById("collegeIdInput").value = "";
         document.getElementById("roleIdInput").value = "";
         fetchDepartments();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل إضافة القسم', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل إضافة القسم");
+        console.error(error);
     }
 }
 
-async function deleteDepartment(deptId) {
-    const result = await Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
-    if (!result.isConfirmed) return;
+async function deleteDepartment(departmentId) {
+    const approved = await confirmDelete("القسم");
+    if (!approved) {
+        return;
+    }
 
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/org/departments/${deptId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                }
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.deleteDepartment(departmentId), {
+            method: "DELETE"
+        });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Delete failed");
-        }
-
-        Swal.fire({ text: 'تم حذف القسم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم حذف القسم بنجاح");
         fetchDepartments();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل حذف القسم', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل حذف القسم");
+        console.error(error);
     }
 }
 
-async function editDepartment(id) {
+async function editDepartment(departmentId) {
     const { value: newName } = await Swal.fire({
-        title: 'أدخل الاسم الجديد للقسم:',
-        input: 'text',
+        title: "الاسم الجديد للقسم",
+        input: "text",
+        inputPlaceholder: "أدخل الاسم الجديد",
         showCancelButton: true,
-        confirmButtonColor: '#219ebc',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: "حفظ",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#219ebc"
     });
-    if (newName && newName.trim()) {
-        updateDepartment(id, newName.trim());
+
+    if (!newName || !newName.trim()) {
+        return;
     }
+
+    updateDepartment(departmentId, newName.trim());
 }
 
-async function updateDepartment(id, name) {
+async function updateDepartment(departmentId, departmentName) {
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/org/departments/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                },
-                body: JSON.stringify({ departmentName: name })
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.updateDepartment(departmentId), {
+            method: "PUT",
+            body: { departmentName }
+        });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Update failed");
-        }
-
-        Swal.fire({ text: 'تم تحديث القسم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم تحديث القسم بنجاح");
         fetchDepartments();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل تحديث القسم', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحديث القسم");
+        console.error(error);
     }
 }
 
-// Load on page load
 document.addEventListener("DOMContentLoaded", () => {
     fetchDepartments();
     fetchColleges();

@@ -1,33 +1,42 @@
-const BASE_URL = "https://ghared-project-1lb7.onrender.com";
-
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
 const loginBtn = document.getElementById("loginBtn");
-const loginError = document.getElementById("loginError");
 
-loginBtn.addEventListener("click", async () => {
+async function loginAdmin() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+        showWarning("يرجى إدخال البريد الإلكتروني وكلمة المرور");
+        return;
+    }
+
+    const originalText = loginBtn.textContent;
+    loginBtn.disabled = true;
+    loginBtn.textContent = "جاري تسجيل الدخول...";
+
     try {
-        const res = await fetch(`${BASE_URL}/api/Admin/AdminLogin`, {
+        const response = await apiRequest(ADMIN_ENDPOINTS.login, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: emailInput.value.trim(),
-                password: passwordInput.value.trim()
-            })
+            body: { email, password },
+            requiresAuth: false
         });
 
-        const data = await res.json();
-
-        if (data.status !== "success") throw new Error();
-
-        localStorage.setItem("adminToken", data.data.token);
+        localStorage.setItem("adminToken", response?.data?.token || "");
         window.location.href = "admin.html";
+    } catch (error) {
+        showError(error?.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة", "فشل تسجيل الدخول");
+        console.error(error);
+    } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = originalText;
+    }
+}
 
-    } catch {
-        Swal.fire({
-            text: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
-            icon: 'error',
-            confirmButtonColor: '#219ebc'
-        });
+loginBtn?.addEventListener("click", loginAdmin);
+
+passwordInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        loginAdmin();
     }
 });

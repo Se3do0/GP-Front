@@ -1,67 +1,6 @@
-async function fetchUsers() {
-    const usersTableBody = document.getElementById("usersTableBody");
-    usersTableBody.innerHTML = `
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-    `;
+let users = [];
 
-    try {
-        const res = await fetch(`${BASE_URL}/api/Admin/getAllUsers`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            }
-        });
-
-        const json = await res.json();
-
-        if (json.status !== "success") {
-            throw new Error("API error");
-        }
-
-        users = json.data.users;
-        renderUsers(users);
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل تحميل المستخدمين', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
-    }
-}
-
-function renderUsers(list) {
-    const usersTableBody = document.getElementById("usersTableBody");
-    usersTableBody.innerHTML = "";
-
-    if (!list || !list.length) {
-        usersTableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center py-5">
-                    <i class="bi bi-inbox text-muted display-4"></i>
-                    <p class="text-muted fw-bold mt-2">لا توجد بيانات مسجلة حالياً</p>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
+function getUsersRoleLabel(roleLevel) {
     const roleMap = {
         0: "مسؤول النظام",
         1: "مدير",
@@ -69,23 +8,48 @@ function renderUsers(list) {
         3: "مسؤول"
     };
 
-    list.forEach(user => {
-        const tr = document.createElement("tr");
+    return roleMap[roleLevel] ?? roleLevel;
+}
 
+async function fetchUsers() {
+    const usersTableBody = document.getElementById("usersTableBody");
+    usersTableBody.innerHTML = renderSkeletonRows(5, 4);
+
+    try {
+        const response = await apiRequest(ADMIN_ENDPOINTS.getUsers);
+        users = response?.data?.users || [];
+        renderUsers(users);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل المستخدمين");
+        console.error(error);
+    }
+}
+
+function renderUsers(list) {
+    const usersTableBody = document.getElementById("usersTableBody");
+    usersTableBody.innerHTML = "";
+
+    if (!Array.isArray(list) || list.length === 0) {
+        usersTableBody.innerHTML = renderEmptyState(5);
+        return;
+    }
+
+    list.forEach((user) => {
+        const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${user.full_name}</td>
-            <td>${user.email}</td>
-            <td>${roleMap[user.role_level] ?? user.role_level}</td>
-            <td>${user.department_name}</td>
+            <td>${escapeHtml(user.full_name)}</td>
+            <td dir="ltr">${escapeHtml(user.email)}</td>
+            <td>${escapeHtml(getUsersRoleLabel(user.role_level))}</td>
+            <td>${escapeHtml(user.department_name || "-")}</td>
             <td>
-                <button class="btn btn-sm btn-outline-primary"
-                        onclick="editUser(${user.user_id})">
-                    تعديل
-                </button>
-                <button class="btn btn-sm btn-outline-danger"
-                        onclick="deleteUser(${user.user_id})">
-                    حذف
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editUser(${user.user_id})">
+                        <i class="bi bi-pencil-square ms-1"></i>تعديل
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${user.user_id})">
+                        <i class="bi bi-trash ms-1"></i>حذف
+                    </button>
+                </div>
             </td>
         `;
 
@@ -94,35 +58,23 @@ function renderUsers(list) {
 }
 
 async function deleteUser(userId) {
-    const result = await Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
-    if (!result.isConfirmed) return;
+    const approved = await confirmDelete("المستخدم");
+    if (!approved) {
+        return;
+    }
 
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/Admin/users/${userId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                }
-            }
-        );
-
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Delete failed");
-        }
-
-        Swal.fire({ text: 'تم حذف المستخدم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await apiRequest(ADMIN_ENDPOINTS.deleteUser(userId), { method: "DELETE" });
+        await showSuccess("تم حذف المستخدم بنجاح");
         fetchUsers();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل حذف المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل حذف المستخدم");
+        console.error(error);
     }
 }
 
 function editUser(id) {
     window.location.href = `user-form.html?id=${id}`;
 }
+
+document.addEventListener("DOMContentLoaded", fetchUsers);

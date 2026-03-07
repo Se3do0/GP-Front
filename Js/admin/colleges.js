@@ -2,43 +2,15 @@ let colleges = [];
 
 async function fetchColleges() {
     const collegesTableBody = document.getElementById("collegesTableBody");
-    collegesTableBody.innerHTML = `
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-        <tr class="skeleton-row">
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-            <td><div class="skeleton-box"></div></td>
-        </tr>
-    `;
+    collegesTableBody.innerHTML = renderSkeletonRows(3, 4);
 
     try {
-        const res = await fetch(`${BASE_URL}/api/org/colleges`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            }
-        });
-
-        const json = await res.json();
-
-        if (json.status !== "success") {
-            throw new Error("API error");
-        }
-
-        colleges = json.data.colleges;
+        const response = await apiRequest(ADMIN_ENDPOINTS.getColleges);
+        colleges = response?.data?.colleges || [];
         renderColleges(colleges);
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل تحميل الكليات', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل الكليات");
+        console.error(error);
     }
 }
 
@@ -46,33 +18,25 @@ function renderColleges(list) {
     const collegesTableBody = document.getElementById("collegesTableBody");
     collegesTableBody.innerHTML = "";
 
-    if (!list || !list.length) {
-        collegesTableBody.innerHTML = `
-            <tr>
-                <td colspan="3" class="text-center py-5">
-                    <i class="bi bi-inbox text-muted display-4"></i>
-                    <p class="text-muted fw-bold mt-2">لا توجد بيانات مسجلة حالياً</p>
-                </td>
-            </tr>
-        `;
+    if (!Array.isArray(list) || list.length === 0) {
+        collegesTableBody.innerHTML = renderEmptyState(3);
         return;
     }
 
-    list.forEach(college => {
+    list.forEach((college) => {
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
-            <td>${college.college_id}</td>
-            <td>${college.college_name}</td>
+            <td>${escapeHtml(college.college_id)}</td>
+            <td>${escapeHtml(college.college_name)}</td>
             <td>
-                <button class="btn btn-sm btn-outline-primary"
-                        onclick="editCollege(${college.college_id})">
-                    تعديل
-                </button>
-                <button class="btn btn-sm btn-outline-danger"
-                        onclick="deleteCollege(${college.college_id})">
-                    حذف
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editCollege(${college.college_id})">
+                        <i class="bi bi-pencil-square ms-1"></i>تعديل
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCollege(${college.college_id})">
+                        <i class="bi bi-trash ms-1"></i>حذف
+                    </button>
+                </div>
             </td>
         `;
 
@@ -81,112 +45,77 @@ function renderColleges(list) {
 }
 
 async function addCollege() {
-    const name = document.getElementById("collegeNameInput").value.trim();
-    if (!name) {
-        Swal.fire({ text: 'يرجى إدخال اسم الكلية', icon: 'warning', confirmButtonColor: '#219ebc' });
+    const collegeName = document.getElementById("collegeNameInput").value.trim();
+    if (!collegeName) {
+        showWarning("يرجى إدخال اسم الكلية");
         return;
     }
 
     try {
-        const res = await fetch(`${BASE_URL}/api/org/colleges`, {
+        await apiRequest(ADMIN_ENDPOINTS.addCollege, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            },
-            body: JSON.stringify({
-                collegeName: name
-            })
+            body: { collegeName }
         });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            console.error("API returned error:", data);
-            throw new Error("Add failed");
-        }
-
-        Swal.fire({ text: 'تم إضافة الكلية بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم إضافة الكلية بنجاح");
         document.getElementById("collegeNameInput").value = "";
         fetchColleges();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل إضافة الكلية', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error("Add college error:", err);
+    } catch (error) {
+        handleApiFailure(error, "فشل إضافة الكلية");
+        console.error(error);
     }
 }
 
-async function editCollege(id) {
+async function editCollege(collegeId) {
     const { value: newName } = await Swal.fire({
-        title: 'أدخل الاسم الجديد للكلية:',
-        input: 'text',
+        title: "الاسم الجديد للكلية",
+        input: "text",
+        inputPlaceholder: "أدخل الاسم الجديد",
         showCancelButton: true,
-        confirmButtonColor: '#219ebc',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: "حفظ",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#219ebc"
     });
-    if (newName && newName.trim()) {
-        updateCollege(id, newName.trim());
+
+    if (!newName || !newName.trim()) {
+        return;
     }
+
+    updateCollege(collegeId, newName.trim());
 }
 
-async function updateCollege(id, name) {
+async function updateCollege(collegeId, collegeName) {
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/org/colleges/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                },
-                body: JSON.stringify({ collegeName: name })
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.updateCollege(collegeId), {
+            method: "PUT",
+            body: { collegeName }
+        });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Update failed");
-        }
-
-        Swal.fire({ text: 'تم تحديث الكلية بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم تحديث الكلية بنجاح");
         fetchColleges();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل تحديث الكلية', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحديث الكلية");
+        console.error(error);
     }
 }
 
 async function deleteCollege(collegeId) {
-    const result = await Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
-    if (!result.isConfirmed) return;
+    const approved = await confirmDelete("الكلية");
+    if (!approved) {
+        return;
+    }
 
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/org/colleges/${collegeId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                }
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.deleteCollege(collegeId), {
+            method: "DELETE"
+        });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Delete failed");
-        }
-
-        Swal.fire({ text: 'تم حذف الكلية بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
+        await showSuccess("تم حذف الكلية بنجاح");
         fetchColleges();
-
-    } catch (err) {
-        Swal.fire({ text: 'فشل حذف الكلية', icon: 'error', confirmButtonColor: '#219ebc' });
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل حذف الكلية");
+        console.error(error);
     }
 }
 
-// Load on page load
 document.addEventListener("DOMContentLoaded", fetchColleges);
