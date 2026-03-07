@@ -3,7 +3,10 @@ import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPlus, Pencil, Trash2, Mail, Shield, Building2, Inbox } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const Users = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const BASE_URL = "https://ghared-project-1lb7.onrender.com";
@@ -95,7 +98,7 @@ const Users = () => {
     };
 
     const handleEdit = (userId) => {
-        console.log("Edit user", userId);
+        navigate(`/user-form?id=${userId}`);
     };
 
     const roleMap = {
@@ -141,6 +144,7 @@ const Users = () => {
                     <motion.button
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
+                        onClick={() => navigate('/user-form')}
                         className="flex items-center gap-2 bg-gradient-to-l from-[#219ebc] to-[#0b3d59] text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-blue-900/20 hover:shadow-blue-900/30 transition-all border border-blue-800"
                     >
                         <UserPlus size={18} />
