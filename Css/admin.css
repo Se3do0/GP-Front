@@ -313,6 +313,43 @@ body {
   color: #b22234;
 }
 
+.card-header-lite {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid var(--hu-border);
+  font-weight: 700;
+  color: var(--hu-dark-blue);
+  background: #f9fcff;
+}
+
+.progress-strip {
+  position: relative;
+  width: 100%;
+  min-width: 120px;
+  height: 10px;
+  border-radius: 999px;
+  background: #e9f1f8;
+  overflow: hidden;
+}
+
+.progress-strip-value {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #219ebc 0%, #0b3d59 100%);
+  transition: width 0.35s ease;
+}
+
+.status-ratio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  padding: 0.24rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(11, 61, 89, 0.1);
+  color: var(--hu-dark-blue);
+  font-weight: 700;
+}
+
 .login-wrapper {
   min-height: 100vh;
   display: flex;

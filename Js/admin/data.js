@@ -14,7 +14,8 @@ const ADMIN_ENDPOINTS = {
     addCollege: "/api/org/colleges",
     updateCollege: (id) => `/api/org/colleges/${id}`,
     deleteCollege: (id) => `/api/org/colleges/${id}`,
-    departmentsPerformanceReport: "/api/reports/admin/departments-performance"
+    departmentsPerformanceReport: "/api/reports/admin/departments-performance",
+    yearlyProgressReport: "/api/reports/admin/yearly-progress"
 };
 
 function getAdminToken() {
