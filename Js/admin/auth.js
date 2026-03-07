@@ -24,6 +24,10 @@ loginBtn.addEventListener("click", async () => {
         window.location.href = "admin.html";
 
     } catch {
-        loginError.classList.remove("d-none");
+        Swal.fire({
+            text: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+            icon: 'error',
+            confirmButtonColor: '#219ebc'
+        });
     }
 });

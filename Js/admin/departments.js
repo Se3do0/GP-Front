@@ -35,6 +35,28 @@ function populateCollegeSelect() {
 }
 
 async function fetchDepartments() {
+    const departmentsTableBody = document.getElementById("departmentsTableBody");
+    departmentsTableBody.innerHTML = `
+        <tr class="skeleton-row">
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+        </tr>
+        <tr class="skeleton-row">
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+        </tr>
+        <tr class="skeleton-row">
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+        </tr>
+    `;
+
     try {
         const res = await fetch(`${BASE_URL}/api/org/departments`, {
             headers: {
@@ -52,7 +74,7 @@ async function fetchDepartments() {
         renderDepartments(departments);
 
     } catch (err) {
-        alert("فشل تحميل الأقسام");
+        Swal.fire({ text: 'فشل تحميل الأقسام', icon: 'error', confirmButtonColor: '#219ebc' });
         console.error(err);
     }
 }
@@ -64,8 +86,9 @@ function renderDepartments(list) {
     if (!list || !list.length) {
         departmentsTableBody.innerHTML = `
             <tr>
-                <td colspan="4" class="text-center text-muted">
-                    لا توجد أقسام
+                <td colspan="4" class="text-center py-5">
+                    <i class="bi bi-inbox text-muted display-4"></i>
+                    <p class="text-muted fw-bold mt-2">لا توجد بيانات مسجلة حالياً</p>
                 </td>
             </tr>
         `;
@@ -99,9 +122,9 @@ async function addDepartment() {
     const name = document.getElementById("departmentNameInput").value.trim();
     const collegeId = Number(document.getElementById("collegeIdInput").value);
     const roleId = Number(document.getElementById("roleIdInput").value);
-    
+
     if (!name || !collegeId || !roleId) {
-        alert("يرجى ملء جميع الحقول");
+        Swal.fire({ text: 'يرجى ملء جميع الحقول', icon: 'warning', confirmButtonColor: '#219ebc' });
         return;
     }
 
@@ -125,21 +148,21 @@ async function addDepartment() {
             throw new Error("Add failed");
         }
 
-        alert("تم إضافة القسم بنجاح");
+        Swal.fire({ text: 'تم إضافة القسم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
         document.getElementById("departmentNameInput").value = "";
         document.getElementById("collegeIdInput").value = "";
         document.getElementById("roleIdInput").value = "";
         fetchDepartments();
 
     } catch (err) {
-        alert("فشل إضافة القسم");
+        Swal.fire({ text: 'فشل إضافة القسم', icon: 'error', confirmButtonColor: '#219ebc' });
         console.error(err);
     }
 }
 
 async function deleteDepartment(deptId) {
-    const ok = confirm("هل أنت متأكد من حذف هذا القسم؟");
-    if (!ok) return;
+    const result = await Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
+    if (!result.isConfirmed) return;
 
     try {
         const res = await fetch(
@@ -158,18 +181,23 @@ async function deleteDepartment(deptId) {
             throw new Error("Delete failed");
         }
 
-        alert("تم حذف القسم بنجاح");
+        Swal.fire({ text: 'تم حذف القسم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
         fetchDepartments();
 
     } catch (err) {
-        alert("فشل حذف القسم");
+        Swal.fire({ text: 'فشل حذف القسم', icon: 'error', confirmButtonColor: '#219ebc' });
         console.error(err);
     }
 }
 
-function editDepartment(id) {
-    // For now, perhaps open a prompt or something, or redirect to edit page
-    const newName = prompt("أدخل الاسم الجديد للقسم:");
+async function editDepartment(id) {
+    const { value: newName } = await Swal.fire({
+        title: 'أدخل الاسم الجديد للقسم:',
+        input: 'text',
+        showCancelButton: true,
+        confirmButtonColor: '#219ebc',
+        cancelButtonText: 'إلغاء'
+    });
     if (newName && newName.trim()) {
         updateDepartment(id, newName.trim());
     }
@@ -195,11 +223,11 @@ async function updateDepartment(id, name) {
             throw new Error("Update failed");
         }
 
-        alert("تم تحديث القسم بنجاح");
+        Swal.fire({ text: 'تم تحديث القسم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
         fetchDepartments();
 
     } catch (err) {
-        alert("فشل تحديث القسم");
+        Swal.fire({ text: 'فشل تحديث القسم', icon: 'error', confirmButtonColor: '#219ebc' });
         console.error(err);
     }
 }

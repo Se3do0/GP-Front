@@ -1,4 +1,29 @@
 async function fetchUsers() {
+    const usersTableBody = document.getElementById("usersTableBody");
+    usersTableBody.innerHTML = `
+        <tr class="skeleton-row">
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+        </tr>
+        <tr class="skeleton-row">
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+        </tr>
+        <tr class="skeleton-row">
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+            <td><div class="skeleton-box"></div></td>
+        </tr>
+    `;
+
     try {
         const res = await fetch(`${BASE_URL}/api/Admin/getAllUsers`, {
             headers: {
@@ -16,19 +41,21 @@ async function fetchUsers() {
         renderUsers(users);
 
     } catch (err) {
-        alert("فشل تحميل المستخدمين");
+        Swal.fire({ text: 'فشل تحميل المستخدمين', icon: 'error', confirmButtonColor: '#219ebc' });
         console.error(err);
     }
 }
 
 function renderUsers(list) {
+    const usersTableBody = document.getElementById("usersTableBody");
     usersTableBody.innerHTML = "";
 
     if (!list || !list.length) {
         usersTableBody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center text-muted">
-                    لا يوجد مستخدمون
+                <td colspan="5" class="text-center py-5">
+                    <i class="bi bi-inbox text-muted display-4"></i>
+                    <p class="text-muted fw-bold mt-2">لا توجد بيانات مسجلة حالياً</p>
                 </td>
             </tr>
         `;
@@ -67,8 +94,8 @@ function renderUsers(list) {
 }
 
 async function deleteUser(userId) {
-    const ok = confirm("هل أنت متأكد من حذف هذا المستخدم؟");
-    if (!ok) return;
+    const result = await Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d', confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
+    if (!result.isConfirmed) return;
 
     try {
         const res = await fetch(
@@ -87,11 +114,11 @@ async function deleteUser(userId) {
             throw new Error("Delete failed");
         }
 
-        alert("تم حذف المستخدم بنجاح");
+        Swal.fire({ text: 'تم حذف المستخدم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
         fetchUsers();
 
     } catch (err) {
-        alert("فشل حذف المستخدم");
+        Swal.fire({ text: 'فشل حذف المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
         console.error(err);
     }
 }
@@ -99,5 +126,3 @@ async function deleteUser(userId) {
 function editUser(id) {
     window.location.href = `user-form.html?id=${id}`;
 }
-
-

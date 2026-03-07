@@ -64,7 +64,10 @@ async function loadUserData(id) {
         const json = await res.json();
         const user = json.data.users.find(u => u.user_id == id);
 
-        if (!user) return alert("المستخدم غير موجود");
+        if (!user) {
+            Swal.fire({ text: 'المستخدم غير موجود', icon: 'error', confirmButtonColor: '#219ebc' });
+            return;
+        }
 
         fullNameInput.value = user.full_name;
         emailInput.value = user.email;
@@ -72,7 +75,7 @@ async function loadUserData(id) {
         departmentInput.value = user.department_id ?? "";
 
     } catch {
-        alert("فشل تحميل بيانات المستخدم");
+        Swal.fire({ text: 'فشل تحميل بيانات المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
     }
 }
 
@@ -115,11 +118,11 @@ async function addUser(payload) {
         const data = await res.json();
         if (data.status !== "success") throw new Error();
 
-        alert("تم إضافة المستخدم بنجاح");
+        await Swal.fire({ text: 'تم إضافة المستخدم بنجاح', icon: 'success', confirmButtonColor: '#219ebc' });
         window.location.href = "admin.html";
 
     } catch {
-        alert("فشل إضافة المستخدم");
+        Swal.fire({ text: 'فشل إضافة المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
     }
 }
 
@@ -140,11 +143,11 @@ async function updateUser(id, payload) {
         const data = await res.json();
         if (data.status !== "success") throw new Error();
 
-        alert("تم تحديث بيانات المستخدم");
+        await Swal.fire({ text: 'تم تحديث بيانات المستخدم', icon: 'success', confirmButtonColor: '#219ebc' });
         window.location.href = "admin.html";
 
     } catch {
-        alert("فشل تحديث المستخدم");
+        Swal.fire({ text: 'فشل تحديث المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
     }
 }
 
