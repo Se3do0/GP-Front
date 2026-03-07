@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserPlus, Pencil, Trash2, Mail, Shield, Building2, Inbox } from 'lucide-react';
-
+import { UserPlus, Pencil, Trash2, Inbox } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+const swalStyle = {
+    confirmButtonColor: '#219ebc',
+    customClass: { popup: 'rounded-xl shadow-lg', confirmButton: 'rounded-lg font-medium' }
+};
+
+const swalConfirmDelete = {
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#e2e8f0',
+    customClass: { popup: 'rounded-xl shadow-lg', confirmButton: 'rounded-lg font-medium px-5', cancelButton: 'rounded-lg font-medium px-5 !text-slate-700' }
+};
 
 const Users = () => {
     const navigate = useNavigate();
@@ -35,7 +45,7 @@ const Users = () => {
             }
 
         } catch (err) {
-            Swal.fire({ text: 'فشل تحميل المستخدمين', icon: 'error', confirmButtonColor: '#219ebc' });
+            Swal.fire({ text: 'فشل تحميل المستخدمين', icon: 'error', ...swalStyle });
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -51,15 +61,9 @@ const Users = () => {
             title: 'هل أنت متأكد من الحذف؟',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#64748b',
             confirmButtonText: 'نعم، احذف',
             cancelButtonText: 'إلغاء',
-            customClass: {
-                popup: 'rounded-2xl shadow-xl',
-                confirmButton: 'rounded-xl font-medium px-5',
-                cancelButton: 'rounded-xl font-medium px-5'
-            }
+            ...swalConfirmDelete
         });
 
         if (!result.isConfirmed) return;
@@ -81,18 +85,12 @@ const Users = () => {
                 throw new Error("Delete failed");
             }
 
-            Swal.fire({
-                text: 'تم حذف المستخدم بنجاح',
-                icon: 'success',
-                confirmButtonColor: '#219ebc',
-                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-medium' }
-            });
+            Swal.fire({ text: 'تم حذف المستخدم بنجاح', icon: 'success', ...swalStyle });
 
-            // Animated exit by updating state locally
             setUsers(users.filter(u => u.user_id !== userId));
 
         } catch (err) {
-            Swal.fire({ text: 'فشل حذف المستخدم', icon: 'error', confirmButtonColor: '#219ebc' });
+            Swal.fire({ text: 'فشل حذف المستخدم', icon: 'error', ...swalStyle });
             console.error(err);
         }
     };
@@ -102,96 +100,79 @@ const Users = () => {
     };
 
     const roleMap = {
-        0: { label: "مسؤول النظام", color: "bg-purple-100 text-purple-700 border-purple-200" },
-        1: { label: "مدير", color: "bg-blue-100 text-blue-700 border-blue-200" },
-        2: { label: "موظف", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-        3: { label: "مسؤول", color: "bg-amber-100 text-amber-700 border-amber-200" }
+        0: { label: "مسؤول النظام", color: "bg-slate-100 text-slate-700 border-slate-200" },
+        1: { label: "مدير", color: "bg-[#219ebc]/10 text-[#219ebc] border-[#219ebc]/20" },
+        2: { label: "موظف", color: "bg-amber-50 text-amber-700 border-amber-200" },
+        3: { label: "مسؤول", color: "bg-slate-50 text-slate-600 border-slate-200" }
     };
 
-    // Stagger animation variants for table rows
     const containerVariants = {
         hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05
-            }
-        }
+        show: { opacity: 1, transition: { staggerChildren: 0.03 } }
     };
 
     const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+        hidden: { opacity: 0, y: 4 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.15, ease: "easeOut" } }
     };
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 2 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-full flex justify-center pb-12"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: "easeInOut" }}
+            className="w-full flex justify-center pb-8"
         >
-            <div className="w-full max-w-6xl space-y-6">
+            <div className="w-full max-w-7xl space-y-6">
 
                 {/* Header Section */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                     <div>
-                        <h4 className="text-2xl font-bold tracking-tight text-[#0b3d59]">إدارة المستخدمين</h4>
-                        <p className="text-slate-500 mt-1 text-sm">إدارة حسابات وصلاحيات موظفي وإداريي الجامعة</p>
+                        <h4 className="text-xl font-semibold text-slate-900">إدارة المستخدمين</h4>
+                        <p className="text-slate-500 mt-1 text-sm">إدارة حسابات وصلاحيات الطاقم الإداري للجامعة</p>
                     </div>
 
                     <motion.button
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={() => navigate('/user-form')}
-                        className="flex items-center gap-2 bg-gradient-to-l from-[#219ebc] to-[#0b3d59] text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-blue-900/20 hover:shadow-blue-900/30 transition-all border border-blue-800"
+                        className="flex items-center gap-2 bg-[#219ebc] hover:bg-[#1a8ba6] text-white px-4 py-2.5 rounded-lg font-medium text-sm transition-colors shadow-sm"
                     >
-                        <UserPlus size={18} />
+                        <UserPlus size={16} />
                         إضافة مستخدم
                     </motion.button>
                 </div>
 
                 {/* Table Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-right border-collapse whitespace-nowrap">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm font-semibold tracking-wide">
-                                    <th className="px-6 py-4">الاسم</th>
-                                    <th className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <Mail size={16} className="text-slate-400" />
-                                            البريد الإلكتروني
-                                        </div>
-                                    </th>
-                                    <th className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <Shield size={16} className="text-slate-400" />
-                                            المستوى
-                                        </div>
-                                    </th>
-                                    <th className="px-6 py-4">
-                                        <div className="flex items-center gap-2">
-                                            <Building2 size={16} className="text-slate-400" />
-                                            الإدارة
-                                        </div>
-                                    </th>
-                                    <th className="px-6 py-4 w-32 text-center">الإجراءات</th>
+                                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-medium uppercase tracking-wider">
+                                    <th className="px-6 py-3.5">الاسم</th>
+                                    <th className="px-6 py-3.5">البريد الإلكتروني</th>
+                                    <th className="px-6 py-3.5">المستوى</th>
+                                    <th className="px-6 py-3.5">الإدارة</th>
+                                    <th className="px-6 py-3.5 w-28 text-center">الإجراءات</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-sm">
+                            <motion.tbody
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
+                                className="divide-y divide-slate-100 text-sm"
+                            >
                                 {isLoading ? (
-                                    Array.from({ length: 4 }).map((_, idx) => (
-                                        <tr key={idx} className="animate-pulse bg-white">
-                                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-3/4"></div></td>
-                                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-5/6"></div></td>
-                                            <td className="px-6 py-4"><div className="h-6 bg-slate-200 rounded-full w-24"></div></td>
-                                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded w-1/2"></div></td>
+                                    Array.from({ length: 5 }).map((_, idx) => (
+                                        <tr key={idx}>
+                                            <td className="px-6 py-4"><div className="h-4 bg-slate-100 animate-pulse rounded w-3/4"></div></td>
+                                            <td className="px-6 py-4"><div className="h-4 bg-slate-100 animate-pulse rounded w-5/6"></div></td>
+                                            <td className="px-6 py-4"><div className="h-5 bg-slate-100 animate-pulse rounded w-20"></div></td>
+                                            <td className="px-6 py-4"><div className="h-4 bg-slate-100 animate-pulse rounded w-1/2"></div></td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <div className="h-8 w-8 bg-slate-200 rounded-lg"></div>
-                                                    <div className="h-8 w-8 bg-slate-200 rounded-lg"></div>
+                                                    <div className="h-8 w-8 bg-slate-100 animate-pulse rounded-lg"></div>
+                                                    <div className="h-8 w-8 bg-slate-100 animate-pulse rounded-lg"></div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -199,67 +180,57 @@ const Users = () => {
                                 ) : (!users || users.length === 0) ? (
                                     <tr>
                                         <td colSpan="5" className="px-6 py-20 text-center">
-                                            <motion.div
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                className="flex flex-col items-center justify-center text-slate-400"
-                                            >
-                                                <div className="w-20 h-20 bg-slate-50/80 rounded-full flex items-center justify-center mb-4 ring-8 ring-slate-50">
-                                                    <Inbox size={40} className="text-slate-300" />
+                                            <div className="flex flex-col items-center justify-center text-slate-400">
+                                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-200">
+                                                    <Inbox size={32} className="text-slate-300" />
                                                 </div>
-                                                <p className="text-lg font-bold text-slate-500">لا توجد بيانات مسجلة حالياً</p>
-                                                <p className="text-sm mt-1 text-slate-400">قم بإضافة مستخدمين جدد ليظهروا هنا</p>
-                                            </motion.div>
+                                                <p className="text-base font-medium text-slate-500">لا توجد سجلات بالنظام</p>
+                                                <p className="text-sm mt-1 text-slate-400">قاعدة البيانات الحالية فارغة من المستخدمين</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 ) : (
                                     <AnimatePresence>
                                         {(users || []).map((user) => {
-                                            const role = roleMap[user.role_level] || { label: user.role_level, color: "bg-slate-100 text-slate-700 border-slate-200" };
+                                            const role = roleMap[user.role_level] || { label: user.role_level, color: "bg-slate-50 text-slate-600 border-slate-200" };
 
                                             return (
                                                 <motion.tr
                                                     key={user.user_id}
                                                     variants={itemVariants}
-                                                    initial="hidden"
-                                                    animate="show"
-                                                    exit={{ opacity: 0, x: -20, backgroundColor: "#fef2f2", transition: { duration: 0.2 } }}
-                                                    className="group transition-colors hover:bg-slate-50/80"
+                                                    exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                                                    className="group hover:bg-slate-50 transition-colors duration-100"
                                                 >
-                                                    <td className="px-6 py-4 font-semibold text-slate-800">
+                                                    <td className="px-6 py-4 font-medium text-slate-900">
                                                         {user.full_name}
                                                     </td>
                                                     <td className="px-6 py-4 text-slate-500">
                                                         {user.email}
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold border ${role.color}`}>
+                                                        <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium border ${role.color}`}>
                                                             {role.label}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 text-slate-500 font-medium">
+                                                    <td className="px-6 py-4 text-slate-500">
                                                         {user.department_name || '-'}
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <div className="flex items-center justify-center gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
-                                                            <motion.button
-                                                                whileHover={{ scale: 1.1, backgroundColor: "#f0f9ff" }}
-                                                                whileTap={{ scale: 0.9 }}
+                                                        <div className="flex items-center justify-center gap-1">
+                                                            <button
                                                                 onClick={() => handleEdit(user.user_id)}
-                                                                className="p-2 text-[#219ebc] bg-white border border-slate-200 hover:border-[#219ebc]/30 rounded-xl transition-colors shadow-sm"
+                                                                className="p-2 text-slate-400 hover:text-[#219ebc] hover:bg-[#219ebc]/5 rounded-lg transition-colors"
                                                                 title="تعديل"
                                                             >
-                                                                <Pencil size={16} strokeWidth={2.5} />
-                                                            </motion.button>
-                                                            <motion.button
-                                                                whileHover={{ scale: 1.1, backgroundColor: "#fef2f2" }}
-                                                                whileTap={{ scale: 0.9 }}
+                                                                <Pencil size={16} />
+                                                            </button>
+                                                            <button
                                                                 onClick={() => handleDelete(user.user_id)}
-                                                                className="p-2 text-red-500 bg-white border border-slate-200 hover:border-red-200 rounded-xl transition-colors shadow-sm"
+                                                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                                                 title="حذف"
                                                             >
-                                                                <Trash2 size={16} strokeWidth={2.5} />
-                                                            </motion.button>
+                                                                <Trash2 size={16} />
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </motion.tr>
@@ -267,7 +238,7 @@ const Users = () => {
                                         })}
                                     </AnimatePresence>
                                 )}
-                            </tbody>
+                            </motion.tbody>
                         </table>
                     </div>
                 </div>

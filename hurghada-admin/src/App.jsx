@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import ProtectedRoute from './components/ProtectedRoute'
+
 import AdminLayout from './components/AdminLayout'
 import Login from './pages/Login/Login'
 import Users from './pages/Users/Users'
@@ -13,13 +13,11 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/" element={<Users />} />
-            <Route path="/departments" element={<Departments />} />
-            <Route path="/colleges" element={<Colleges />} />
-            <Route path="/user-form" element={<UserForm />} />
-          </Route>
+        <Route element={<AdminLayout />}>
+          <Route path="/" element={<Users />} />
+          <Route path="/departments" element={<Departments />} />
+          <Route path="/colleges" element={<Colleges />} />
+          <Route path="/user-form" element={<UserForm />} />
         </Route>
       </Routes>
     </Router>

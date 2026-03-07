@@ -26,7 +26,7 @@ const Login = () => {
                 text: 'الرجاء إدخال البريد الإلكتروني وكلمة المرور',
                 icon: 'warning',
                 confirmButtonColor: '#219ebc',
-                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-medium' }
+                customClass: { popup: 'rounded-xl shadow-lg', confirmButton: 'rounded-lg font-medium' }
             });
             return;
         }
@@ -55,7 +55,7 @@ const Login = () => {
                 text: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
                 icon: 'error',
                 confirmButtonColor: '#219ebc',
-                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-medium' }
+                customClass: { popup: 'rounded-xl shadow-lg', confirmButton: 'rounded-lg font-medium' }
             });
         } finally {
             setIsSubmitting(false);
@@ -63,48 +63,37 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0b3d59] via-[#0f547a] to-[#219ebc] flex items-center justify-center p-4 relative overflow-hidden font-sans text-slate-800" dir="rtl">
-
-            {/* Background Decorations */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#219ebc]/20 rounded-full blur-3xl"></div>
-            </div>
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans" dir="rtl">
 
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
-                className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden relative z-10 border border-white/20"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="w-full max-w-md bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
             >
-                {/* Header Line */}
-                <div className="h-2 w-full bg-gradient-to-r from-[#219ebc] to-[#0b3d59]"></div>
+                {/* Top Accent Line */}
+                <div className="h-1 w-full bg-[#219ebc]"></div>
 
                 <div className="p-10">
                     <div className="flex flex-col items-center mb-8">
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                            className="bg-white p-3 rounded-2xl shadow-lg shadow-blue-900/10 mb-6 border border-slate-100"
-                        >
+                        <div className="mb-5">
                             <img src={logo} alt="شعار جامعة الغردقة" className="w-16 h-16 object-contain" />
-                        </motion.div>
-                        <h2 className="text-2xl font-bold text-[#0b3d59] tracking-tight">تسجيل الدخول للإدارة</h2>
-                        <p className="text-slate-500 text-sm mt-2">لوحة تحكم جامعة الغردقة</p>
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-900">تسجيل الدخول</h2>
+                        <p className="text-slate-500 text-sm mt-1.5">نظام الإدارة - جامعة الغردقة</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-5">
                         <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-slate-700 mr-1">البريد الإلكتروني</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400 group-focus-within:text-[#219ebc] transition-colors">
+                            <label className="text-sm font-medium text-slate-700">البريد الإلكتروني</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
                                     <Mail size={18} />
                                 </div>
                                 <input
                                     type="email"
                                     dir="ltr"
-                                    className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-[#219ebc]/30 focus:border-[#219ebc] block py-3.5 pl-3 pr-11 transition-all outline-none text-left"
+                                    className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-[#219ebc]/20 focus:border-[#219ebc] block py-3 pl-4 pr-10 transition-colors outline-none text-left placeholder-slate-400"
                                     placeholder="admin@hurghada.edu.eg"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -113,15 +102,15 @@ const Login = () => {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-sm font-semibold text-slate-700 mr-1">كلمة المرور</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400 group-focus-within:text-[#219ebc] transition-colors">
+                            <label className="text-sm font-medium text-slate-700">كلمة المرور</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
                                     <Lock size={18} />
                                 </div>
                                 <input
                                     type="password"
                                     dir="ltr"
-                                    className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-[#219ebc]/30 focus:border-[#219ebc] block py-3.5 pl-3 pr-11 transition-all outline-none text-left"
+                                    className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-[#219ebc]/20 focus:border-[#219ebc] block py-3 pl-4 pr-10 transition-colors outline-none text-left placeholder-slate-400"
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -130,18 +119,17 @@ const Login = () => {
                         </div>
 
                         <motion.button
-                            whileHover={{ scale: 1.01, translateY: -1 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full bg-gradient-to-r from-[#0b3d59] to-[#126491] hover:from-[#0d4f75] hover:to-[#1678ae] text-white font-bold rounded-xl text-sm px-5 py-3.5 text-center transition-all shadow-lg shadow-[#0b3d59]/30 flex items-center justify-center gap-2 mt-6 border border-[#09324a] disabled:opacity-70"
+                            className="w-full bg-[#219ebc] hover:bg-[#1a8ba6] text-white font-medium rounded-lg text-sm px-5 py-3 text-center transition-colors flex items-center justify-center gap-2.5 mt-6 disabled:opacity-60"
                         >
                             {isSubmitting ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                             ) : (
                                 <>
                                     <LogIn size={18} />
-                                    <span>دخول المسؤول</span>
+                                    <span>دخول النظام</span>
                                 </>
                             )}
                         </motion.button>
