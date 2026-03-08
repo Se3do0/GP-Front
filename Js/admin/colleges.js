@@ -1,25 +1,16 @@
 let colleges = [];
 
 async function fetchColleges() {
+    const collegesTableBody = document.getElementById("collegesTableBody");
+    collegesTableBody.innerHTML = renderSkeletonRows(3, 4);
+
     try {
-        const res = await fetch(`${BASE_URL}/api/org/colleges`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            }
-        });
-
-        const json = await res.json();
-
-        if (json.status !== "success") {
-            throw new Error("API error");
-        }
-
-        colleges = json.data.colleges;
+        const response = await apiRequest(ADMIN_ENDPOINTS.getColleges);
+        colleges = response?.data?.colleges || [];
         renderColleges(colleges);
-
-    } catch (err) {
-        alert("فشل تحميل الكليات");
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحميل الكليات");
+        console.error(error);
     }
 }
 
@@ -27,32 +18,25 @@ function renderColleges(list) {
     const collegesTableBody = document.getElementById("collegesTableBody");
     collegesTableBody.innerHTML = "";
 
-    if (!list || !list.length) {
-        collegesTableBody.innerHTML = `
-            <tr>
-                <td colspan="3" class="text-center text-muted">
-                    لا توجد كليات
-                </td>
-            </tr>
-        `;
+    if (!Array.isArray(list) || list.length === 0) {
+        collegesTableBody.innerHTML = renderEmptyState(3);
         return;
     }
 
-    list.forEach(college => {
+    list.forEach((college) => {
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
-            <td>${college.college_id}</td>
-            <td>${college.college_name}</td>
+            <td>${escapeHtml(college.college_id)}</td>
+            <td>${escapeHtml(college.college_name)}</td>
             <td>
-                <button class="btn btn-sm btn-outline-primary"
-                        onclick="editCollege(${college.college_id})">
-                    تعديل
-                </button>
-                <button class="btn btn-sm btn-outline-danger"
-                        onclick="deleteCollege(${college.college_id})">
-                    حذف
-                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editCollege(${college.college_id})">
+                        <i class="bi bi-pencil-square ms-1"></i>تعديل
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCollege(${college.college_id})">
+                        <i class="bi bi-trash ms-1"></i>حذف
+                    </button>
+                </div>
             </td>
         `;
 
@@ -61,106 +45,77 @@ function renderColleges(list) {
 }
 
 async function addCollege() {
-    const name = document.getElementById("collegeNameInput").value.trim();
-    if (!name) {
-        alert("يرجى إدخال اسم الكلية");
+    const collegeName = document.getElementById("collegeNameInput").value.trim();
+    if (!collegeName) {
+        showWarning("يرجى إدخال اسم الكلية");
         return;
     }
 
     try {
-        const res = await fetch(`${BASE_URL}/api/org/colleges`, {
+        await apiRequest(ADMIN_ENDPOINTS.addCollege, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-            },
-            body: JSON.stringify({
-                collegeName: name
-            })
+            body: { collegeName }
         });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            console.error("API returned error:", data);
-            throw new Error("Add failed");
-        }
-
-        alert("تم إضافة الكلية بنجاح");
+        await showSuccess("تم إضافة الكلية بنجاح");
         document.getElementById("collegeNameInput").value = "";
         fetchColleges();
-
-    } catch (err) {
-        alert("فشل إضافة الكلية");
-        console.error("Add college error:", err);
+    } catch (error) {
+        handleApiFailure(error, "فشل إضافة الكلية");
+        console.error(error);
     }
 }
 
-function editCollege(id) {
-    const newName = prompt("أدخل الاسم الجديد للكلية:");
-    if (newName && newName.trim()) {
-        updateCollege(id, newName.trim());
+async function editCollege(collegeId) {
+    const { value: newName } = await Swal.fire({
+        title: "الاسم الجديد للكلية",
+        input: "text",
+        inputPlaceholder: "أدخل الاسم الجديد",
+        showCancelButton: true,
+        confirmButtonText: "حفظ",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#219ebc"
+    });
+
+    if (!newName || !newName.trim()) {
+        return;
     }
+
+    updateCollege(collegeId, newName.trim());
 }
 
-async function updateCollege(id, name) {
+async function updateCollege(collegeId, collegeName) {
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/org/colleges/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                },
-                body: JSON.stringify({ collegeName: name })
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.updateCollege(collegeId), {
+            method: "PUT",
+            body: { collegeName }
+        });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Update failed");
-        }
-
-        alert("تم تحديث الكلية بنجاح");
+        await showSuccess("تم تحديث الكلية بنجاح");
         fetchColleges();
-
-    } catch (err) {
-        alert("فشل تحديث الكلية");
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل تحديث الكلية");
+        console.error(error);
     }
 }
 
 async function deleteCollege(collegeId) {
-    const ok = confirm("هل أنت متأكد من حذف هذه الكلية؟");
-    if (!ok) return;
+    const approved = await confirmDelete("الكلية");
+    if (!approved) {
+        return;
+    }
 
     try {
-        const res = await fetch(
-            `${BASE_URL}/api/org/colleges/${collegeId}`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-                }
-            }
-        );
+        await apiRequest(ADMIN_ENDPOINTS.deleteCollege(collegeId), {
+            method: "DELETE"
+        });
 
-        const data = await res.json();
-
-        if (data.status !== "success") {
-            throw new Error("Delete failed");
-        }
-
-        alert("تم حذف الكلية بنجاح");
+        await showSuccess("تم حذف الكلية بنجاح");
         fetchColleges();
-
-    } catch (err) {
-        alert("فشل حذف الكلية");
-        console.error(err);
+    } catch (error) {
+        handleApiFailure(error, "فشل حذف الكلية");
+        console.error(error);
     }
 }
 
-// Load on page load
 document.addEventListener("DOMContentLoaded", fetchColleges);

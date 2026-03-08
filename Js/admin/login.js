@@ -1,35 +1,27 @@
 const loginForm = document.getElementById("login-form");
 
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+loginForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email")?.value?.trim();
+  const password = document.getElementById("password")?.value?.trim();
+
+  if (!email || !password) {
+    showWarning("يرجى إدخال البريد الإلكتروني وكلمة المرور");
+    return;
+  }
 
   try {
-    const res = await fetch(
-      "https://ghared-project-1lb7.onrender.com/api/users/login",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      }
-    );
+    const response = await apiRequest(ADMIN_ENDPOINTS.login, {
+      method: "POST",
+      body: { email, password },
+      requiresAuth: false
+    });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message || "Login failed");
-      return;
-    }
-
-    // SAVE TOKEN
-    localStorage.setItem("token", data.token);
-
-    // REDIRECT TO INBOX (GP-Front page)
-    window.location.href = "../html/inbox.html";
-  } catch (err) {
-    console.error(err);
-    alert("Server error");
+    localStorage.setItem("adminToken", response?.data?.token || "");
+    window.location.href = "admin.html";
+  } catch (error) {
+    showError(error?.message || "فشل تسجيل الدخول");
+    console.error(error);
   }
 });
